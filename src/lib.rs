@@ -99,12 +99,15 @@ impl<T, M> Hazard<T, M> where M: Memory {
     ///
     /// The maximum number of threads is specified by `threads` and the maximum number of hazardous
     /// pointers per thread is specified by `domains`.
-    pub fn new(memory: M, threads: usize, domains: usize) -> Self {
+    ///
+    /// The maximum size lists of retired pointers can grow to is specified by `threshold`. Once a
+    /// list of retired pointers reaches this limit, any pointers that are no longer hazardous are
+    /// removed from the list and the memory they refer to is deallocated.
+    pub fn new(memory: M, threads: usize, domains: usize, threshold: usize) -> Self {
         let hazardous = (0..threads).map(|_| {
             (0..domains).map(|_| AtomicPtr::new(ptr::null_mut())).collect()
         }).collect();
         let retired = vec![RefCell::new(vec![]); threads];
-        let threshold = 2 * threads * domains;
         Hazard {
             hazardous: AlignVec::new(hazardous),
             retired: AlignVec::new(retired),
