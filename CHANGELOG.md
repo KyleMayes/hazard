@@ -1,6 +1,6 @@
 ## [0.2.0] - 2017-03-24
 
-# Changed
+### Changed
 - Added `threshold` parameter to `Hazard` constructor
 - Relaxed atomic orderings
 
