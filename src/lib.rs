@@ -25,7 +25,8 @@ use std::mem;
 use std::ops;
 use std::ptr;
 use std::cell::{RefCell};
-use std::sync::atomic::{AtomicPtr, Ordering};
+use std::sync::atomic::{AtomicPtr};
+use std::sync::atomic::Ordering::*;
 
 //================================================
 // Traits
@@ -120,18 +121,18 @@ impl<T, M> Hazard<T, M> where M: Memory {
 
     /// Sets the hazardous pointer for the supplied domain using the supplied thread.
     pub fn mark(&self, thread: usize, domain: usize, pointer: *mut T) -> *mut T {
-        self.hazardous[thread][domain].store(pointer, Ordering::SeqCst);
+        self.hazardous[thread][domain].store(pointer, Release);
         pointer
     }
 
     /// Clears the hazardous pointer for the supplied domain using the supplied thread.
     pub fn clear(&self, thread: usize, domain: usize) {
-        self.hazardous[thread][domain].store(ptr::null_mut(), Ordering::SeqCst);
+        self.hazardous[thread][domain].store(ptr::null_mut(), Release);
     }
 
     /// Returns whether the supplied pointer is considered hazardous.
     pub fn hazardous(&self, pointer: *mut T) -> bool {
-        self.hazardous.iter().any(|h| h.iter().any(|p| pointer == p.load(Ordering::SeqCst)))
+        self.hazardous.iter().any(|h| h.iter().any(|p| pointer == p.load(Acquire)))
     }
 
     fn kill(&self, pointer: *mut T) -> bool {
