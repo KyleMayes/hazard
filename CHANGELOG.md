@@ -1,4 +1,4 @@
-## [0.2.0] - UNRELEASED
+## [0.2.0] - 2017-03-24
 
 # Changed
 - Added `threshold` parameter to `Hazard` constructor
