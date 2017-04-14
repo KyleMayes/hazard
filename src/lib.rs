@@ -105,21 +105,21 @@ impl Memory for BoxMemory {
     }
 }
 
-// Hazard ________________________________________
+// Pointers ______________________________________
 
-/// A collection of pointers considered hazardous.
+/// A collection of hazardous pointers.
 #[repr(C)]
-pub struct Hazard<T, M> where M: Memory {
+pub struct Pointers<T, M> where M: Memory {
     hazardous: AlignVec<Vec<AtomicPtr<T>>>,
     retired: AlignVec<RefCell<Vec<*mut T>>>,
     threshold: usize,
     memory: M,
 }
 
-impl<T, M> Hazard<T, M> where M: Memory {
+impl<T, M> Pointers<T, M> where M: Memory {
     //- Constructors -----------------------------
 
-    /// Constructs a new `Hazard`.
+    /// Constructs a new `Pointers`.
     ///
     /// The maximum number of threads is specified by `threads` and the maximum number of hazardous
     /// pointers per thread is specified by `domains`.
@@ -132,7 +132,7 @@ impl<T, M> Hazard<T, M> where M: Memory {
             (0..domains).map(|_| AtomicPtr::new(ptr::null_mut())).collect()
         }).collect();
         let retired = vec![RefCell::new(vec![]); threads];
-        Hazard {
+        Pointers {
             hazardous: AlignVec::new(hazardous),
             retired: AlignVec::new(retired),
             threshold: threshold,
@@ -177,7 +177,7 @@ impl<T, M> Hazard<T, M> where M: Memory {
     }
 }
 
-impl<T, M> Drop for Hazard<T, M> where M: Memory {
+impl<T, M> Drop for Pointers<T, M> where M: Memory {
     fn drop(&mut self) {
         for retired in &*self.retired {
             for pointer in &*retired.borrow() {
@@ -187,8 +187,8 @@ impl<T, M> Drop for Hazard<T, M> where M: Memory {
     }
 }
 
-impl<T, M> fmt::Debug for Hazard<T, M> where M: Memory {
+impl<T, M> fmt::Debug for Pointers<T, M> where M: Memory {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.debug_struct("Hazard").field("hazardous", &self.hazardous).finish()
+        formatter.debug_struct("Pointers").field("hazardous", &self.hazardous).finish()
     }
 }
