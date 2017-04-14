@@ -13,6 +13,8 @@
 // limitations under the License.
 
 //! Hazard pointers.
+//!
+//! * [Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects](http://web.cecs.pdx.edu/~walpole/class/cs510/papers/11.pdf)
 
 #![warn(missing_copy_implementations, missing_debug_implementations, missing_docs)]
 
