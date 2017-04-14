@@ -143,6 +143,8 @@ impl<T, M> Pointers<T, M> where M: Memory {
     //- Accessors --------------------------------
 
     /// Sets the hazardous pointer for the supplied domain using the supplied thread.
+    ///
+    /// **Forward progress guarantee:** lock-free.
     pub fn mark(&self, thread: usize, domain: usize, pointer: &AtomicPtr<T>) -> *mut T {
         loop {
             let value = pointer.load(Acquire);
@@ -154,11 +156,15 @@ impl<T, M> Pointers<T, M> where M: Memory {
     }
 
     /// Clears the hazardous pointer for the supplied domain using the supplied thread.
+    ///
+    /// **Forward progress guarantee:** wait-free population oblivious.
     pub fn clear(&self, thread: usize, domain: usize) {
         self.hazardous[thread][domain].store(ptr::null_mut(), Release);
     }
 
     /// Returns whether the supplied pointer is considered hazardous.
+    ///
+    /// **Forward progress guarantee:** wait-free bounded (`threads * domains`).
     pub fn hazardous(&self, pointer: *mut T) -> bool {
         self.hazardous.iter().any(|h| h.iter().any(|p| pointer == p.load(Acquire)))
     }
@@ -173,6 +179,8 @@ impl<T, M> Pointers<T, M> where M: Memory {
     }
 
     /// Retires the supplied pointer using the supplied thread.
+    ///
+    /// **Forward progress guarantee:** wait-free bounded (`threads * threads`).
     pub fn retire(&self, thread: usize, pointer: *mut T) {
         let mut retired = self.retired[thread].borrow_mut();
         retired.push(pointer);
