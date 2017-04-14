@@ -1,4 +1,4 @@
-## [0.3.0] - UNRELEASED
+## [0.3.0] - 2017-04-14
 
 ### Removed
 - Removed `VecMemory` struct
