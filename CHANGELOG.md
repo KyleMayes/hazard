@@ -1,3 +1,8 @@
+## [0.3.0] - UNRELEASED
+
+### Added
+- Added `AlignVec` struct
+
 ## [0.2.0] - 2017-03-24
 
 ### Changed

@@ -54,8 +54,9 @@ const POINTERS: usize = 32;
 #[cfg(target_pointer_width="64")]
 const POINTERS: usize = 16;
 
+/// A `Vec` aligned to the size of a cacheline.
 #[repr(C)]
-struct AlignVec<T> {
+pub struct AlignVec<T> {
     vec: Vec<T>,
     _padding: [usize; POINTERS - 3],
 }
@@ -63,7 +64,8 @@ struct AlignVec<T> {
 impl<T> AlignVec<T> {
     //- Constructors -----------------------------
 
-    fn new(vec: Vec<T>) -> Self {
+    /// Constructs a new `AlignVec`.
+    pub fn new(vec: Vec<T>) -> Self {
         AlignVec { vec: vec, _padding: [0; POINTERS - 3] }
     }
 }
@@ -79,6 +81,12 @@ impl<T> ops::Deref for AlignVec<T> {
 
     fn deref(&self) -> &Self::Target {
         &self.vec
+    }
+}
+
+impl<T> ops::DerefMut for AlignVec<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.vec
     }
 }
 
