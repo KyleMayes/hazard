@@ -155,6 +155,14 @@ impl<T, M> Pointers<T, M> where M: Memory {
         }
     }
 
+    /// Sets the hazardous pointer for the supplied domain using the supplied thread.
+    ///
+    /// **Forward progress guarantee:** wait-free population oblivious.
+    pub fn mark_ptr(&self, thread: usize, domain: usize, pointer: *mut T) -> *mut T {
+        self.hazardous[thread][domain].store(pointer, Release);
+        pointer
+    }
+
     /// Clears the hazardous pointer for the supplied domain using the supplied thread.
     ///
     /// **Forward progress guarantee:** wait-free population oblivious.

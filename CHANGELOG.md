@@ -6,6 +6,7 @@
 ### Added
 - Added `AlignVec` struct
 - Added `BoxMemory` struct
+- Added `Pointers::mark_ptr` method
 
 ### Changed
 - Removed `unsafe` requirement from `Memory::allocate` method
