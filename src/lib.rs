@@ -143,9 +143,14 @@ impl<T, M> Pointers<T, M> where M: Memory {
     //- Accessors --------------------------------
 
     /// Sets the hazardous pointer for the supplied domain using the supplied thread.
-    pub fn mark(&self, thread: usize, domain: usize, pointer: *mut T) -> *mut T {
-        self.hazardous[thread][domain].store(pointer, Release);
-        pointer
+    pub fn mark(&self, thread: usize, domain: usize, pointer: &AtomicPtr<T>) -> *mut T {
+        loop {
+            let value = pointer.load(Acquire);
+            self.hazardous[thread][domain].store(value, Release);
+            if value == pointer.load(Acquire) {
+                return value;
+            }
+        }
     }
 
     /// Clears the hazardous pointer for the supplied domain using the supplied thread.

@@ -11,6 +11,9 @@
 - Removed `unsafe` requirement from `Memory::allocate` method
 - Renamed `Hazard` struct to `Pointers`
 
+### Fixed
+- Fixed correctness of `Pointers::mark` method
+
 ## [0.2.0] - 2017-03-24
 
 ### Changed
