@@ -21,7 +21,6 @@
 #![cfg_attr(feature="clippy", warn(clippy))]
 
 use std::fmt;
-use std::mem;
 use std::ops;
 use std::ptr;
 use std::cell::{RefCell};
@@ -37,8 +36,7 @@ use std::sync::atomic::Ordering::*;
 /// A type that can allocate and deallocate memory.
 pub trait Memory {
     /// Allocates memory.
-    unsafe fn allocate<T>(&self, value: T) -> *mut T;
-
+    fn allocate<T>(&self, value: T) -> *mut T;
     /// Deallocates the memory associated with the supplied pointer.
     unsafe fn deallocate<T>(&self, pointer: *mut T);
 }
@@ -87,6 +85,23 @@ impl<T> ops::Deref for AlignVec<T> {
 impl<T> ops::DerefMut for AlignVec<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.vec
+    }
+}
+
+// BoxMemory _____________________________________
+
+/// An allocator that uses `Box` to allocate and deallocate memory.
+#[derive(Copy, Clone, Debug)]
+pub struct BoxMemory;
+
+impl Memory for BoxMemory {
+    fn allocate<T>(&self, value: T) -> *mut T {
+        Box::into_raw(Box::new(value))
+    }
+
+    unsafe fn deallocate<T>(&self, pointer: *mut T) {
+        assert!(!pointer.is_null());
+        Box::from_raw(pointer);
     }
 }
 
@@ -175,25 +190,5 @@ impl<T, M> Drop for Hazard<T, M> where M: Memory {
 impl<T, M> fmt::Debug for Hazard<T, M> where M: Memory {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.debug_struct("Hazard").field("hazardous", &self.hazardous).finish()
-    }
-}
-
-// VecMemory _____________________________________
-
-/// An allocator that uses `Vec` to allocate and deallocate memory.
-#[derive(Copy, Clone, Debug)]
-pub struct VecMemory;
-
-impl Memory for VecMemory {
-    unsafe fn allocate<T>(&self, value: T) -> *mut T {
-        let mut vec = vec![value];
-        let pointer = vec.as_mut_ptr();
-        mem::forget(vec);
-        pointer
-    }
-
-    unsafe fn deallocate<T>(&self, pointer: *mut T) {
-        assert!(!pointer.is_null());
-        Vec::from_raw_parts(pointer, 1, 1);
     }
 }

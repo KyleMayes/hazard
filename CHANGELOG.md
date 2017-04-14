@@ -1,7 +1,14 @@
 ## [0.3.0] - UNRELEASED
 
+### Removed
+- Removed `VecMemory` struct
+
 ### Added
 - Added `AlignVec` struct
+- Added `BoxMemory` struct
+
+### Changed
+- Removed `unsafe` requirement from `Memory::allocate` method
 
 ## [0.2.0] - 2017-03-24
 
