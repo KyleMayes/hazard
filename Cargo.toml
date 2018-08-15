@@ -10,7 +10,7 @@ license = "Apache-2.0"
 
 description = "Hazard pointers."
 
-documentation = "https://kylemayes.github.io/hazard/hazard"
+documentation = "https://docs.rs/hazard"
 repository = "https://github.com/KyleMayes/hazard"
 
 [dependencies]
