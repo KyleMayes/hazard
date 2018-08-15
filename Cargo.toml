@@ -12,3 +12,5 @@ description = "Hazard pointers."
 
 documentation = "https://docs.rs/hazard"
 repository = "https://github.com/KyleMayes/hazard"
+
+keywords = ["lock-free", "pointer"]
