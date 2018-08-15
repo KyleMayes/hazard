@@ -12,7 +12,3 @@ description = "Hazard pointers."
 
 documentation = "https://docs.rs/hazard"
 repository = "https://github.com/KyleMayes/hazard"
-
-[dependencies]
-
-clippy = { version = "0.0.*", optional = true }
